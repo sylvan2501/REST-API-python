@@ -103,3 +103,12 @@ def add_pets():
     session.add(pet)
     session.commit()
     return {'id': pet.pet_id}
+
+
+@app.route('/pets/<id>', methods=['DELETE'])
+def delete_pet_record(id):
+    pet = session.query(Pet).get(id)
+    if pet is None:
+        return {"error": "record not found"}
+    session.delete(pet)
+    session.commit()
