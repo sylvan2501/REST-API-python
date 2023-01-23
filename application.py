@@ -3,7 +3,11 @@ from sqlalchemy import create_engine, ForeignKey, Column, String, Integer, CHAR
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+# type 'export FLASK_APP=application.py'
+# and 'export FLASK_ENV=development'
+# and type 'flask run' for running the server
 Base = declarative_base()
+app = Flask(__name__)
 
 
 class Person(Base):
@@ -49,29 +53,34 @@ Base.metadata.create_all(bind=engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-person = Person(123456789, "Michael", "Perkins", "m", 35)
-session.add(person)
-session.commit()
 
-person1 = Person(123456785, "Tim", "Lodi", "m", 23)
-person2 = Person(122455789, "Dan", "Freeman", "m", 34)
-person3 = Person(523458789, "Jane", "Eyre", "f", 39)
-session.add(person1)
-session.add(person2)
-session.add(person3)
-session.commit()
 
-# results = session.query(Person).filter(Person.lastname == 'Lodi')
+@app.route('/')
+def index():
+    return 'Hello!'
 
-pet1 = Pet(8931, 'Scali', 'This is a reptilian type of creature', person1.ssn)
-pet2 = Pet(4230, 'Feathery', 'This is a reptilian type of creature', person2.ssn)
-pet3 = Pet(8011, 'Spiky', 'This is a reptilian type of creature', person3.ssn)
-pet4 = Pet(4537, 'Slithery', 'This is a reptilian type of creature', person2.ssn)
-pet5 = Pet(4411, 'Wiggly', 'This is a reptilian type of creature', person1.ssn)
 
-session.add(pet1)
-session.add(pet2)
-session.add(pet3)
-session.add(pet4)
-session.add(pet5)
-session.commit()
+@app.route('/pets')
+def get_pets():
+    pets = session.query(Pet)
+    output = []
+    for pet in pets:
+        pet_data = {'id': pet.pet_id, 'name': pet.pet_name, 'description': pet.description, 'owner': pet.owner}
+        output.append(pet_data)
+    return {'pets': output}
+
+
+@app.route('/owners')
+def get_owners():
+    owners = session.query(Person)
+    output = []
+    for owner in owners:
+        owner_data = {
+                      'first_name': owner.firstname,
+                      'last_name': owner.lastname,
+                      'ssn': owner.ssn,
+                      'age': owner.age,
+                      'gender': owner.gender
+                      }
+        output.append(owner_data)
+    return {'owners': output}
