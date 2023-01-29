@@ -14,7 +14,7 @@ class Person(Base):
     __tablename__ = "people"
 
     ssn = Column("ssn", Integer, primary_key=True)
-    firstname = Column("firsrname", String)
+    firstname = Column("firstname", String)
     lastname = Column("lastname", String)
     gender = Column("gender", CHAR)
     age = Column("age", Integer)
@@ -112,3 +112,4 @@ def delete_pet_record(id):
         return {"error": "record not found"}
     session.delete(pet)
     session.commit()
+    return {"message" : "operation is successful"}
